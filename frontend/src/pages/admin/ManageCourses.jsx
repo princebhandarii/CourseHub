@@ -111,7 +111,7 @@ export default function ManageCourses() {
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden flex-shrink-0">
                           {c.thumbnail
-                            ? <img src={c.thumbnail} className="w-full h-full object-cover" alt="" />
+                            ?  src={`https://coursehub-b7gs.onrender.com${c.thumbnail}`} className="w-full h-full object-cover" alt="" />
                             : <div className="w-full h-full flex items-center justify-center"><BookOpen className="w-5 h-5 text-gray-400" /></div>
                           }
                         </div>
