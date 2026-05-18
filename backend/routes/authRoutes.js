@@ -1,4 +1,3 @@
-// ─── Auth Routes ─────────────────────────────────────────────────────────────
 const express = require('express');
 const r = express.Router();
 
@@ -7,20 +6,28 @@ const {
   login,
   adminLogin,
   adminRegister,
-  getMe
+  getMe,
+  forgotPassword,
+  resetPassword
 } = require('../controllers/authController');
 
 const { protect } = require('../middleware/auth');
 
-// User Routes
+// ─── User Routes ─────────────────────────────
 r.post('/register', register);
 r.post('/login', login);
 
-// Admin Routes
+// Forgot Password
+r.post('/forgot-password', forgotPassword);
+
+// Reset Password
+r.put('/reset-password/:token', resetPassword);
+
+// ─── Admin Routes ────────────────────────────
 r.post('/admin/login', adminLogin);
 r.post('/admin/register', adminRegister);
 
-// Current User
+// ─── Current User ────────────────────────────
 r.get('/me', protect, getMe);
 
 module.exports = r;
