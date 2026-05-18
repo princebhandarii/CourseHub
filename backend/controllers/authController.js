@@ -134,44 +134,13 @@ exports.forgotPassword = async (req, res) => {
 
     console.log("RESET URL:", resetUrl);
 
-    const message = `
-Password Reset Request
-
-Click this link to reset your password:
-
-${resetUrl}
-
-If you did not request this email, ignore it.
-`;
-
-    // SEND EMAIL
-    await sendEmail({
-      to: user.email,
-      subject: 'Password Reset',
-      text: message,
-      html: `
-        <h2>Password Reset</h2>
-        <p>Click below button to reset password:</p>
-
-        <a href="${resetUrl}" 
-           style="
-             display:inline-block;
-             padding:12px 20px;
-             background:#000;
-             color:#fff;
-             text-decoration:none;
-             border-radius:8px;
-           ">
-           Reset Password
-        </a>
-
-        <p>If you did not request this, ignore this email.</p>
-      `
-    });
+    // TEMPORARY: EMAIL DISABLED
+    // because nodemailer freezing on Render
 
     return res.status(200).json({
       success: true,
-      message: 'Reset email sent successfully'
+      message: 'Reset link generated successfully',
+      resetUrl
     });
 
   } catch (err) {
@@ -184,7 +153,6 @@ If you did not request this email, ignore it.
     });
   }
 };
-
 // ─── RESET PASSWORD ──────────────────────────────────────────
 exports.resetPassword = async (req, res) => {
 
