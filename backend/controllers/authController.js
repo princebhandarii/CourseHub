@@ -5,6 +5,7 @@ const crypto = require('crypto');
 
 // ─── Helper: send token response ─────────────────────────────
 const sendTokenResponse = (user, statusCode, res) => {
+
   const token = generateToken(user._id);
 
   user.password = undefined;
@@ -18,6 +19,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 
 // ─── REGISTER USER ───────────────────────────────────────────
 exports.register = async (req, res) => {
+
   try {
 
     const { name, email, password } = req.body;
@@ -54,6 +56,7 @@ exports.register = async (req, res) => {
 
 // ─── LOGIN USER ──────────────────────────────────────────────
 exports.login = async (req, res) => {
+
   try {
 
     const { email, password } = req.body;
@@ -103,8 +106,6 @@ exports.forgotPassword = async (req, res) => {
 
     const { email } = req.body;
 
-    console.log("EMAIL:", email);
-
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -114,38 +115,60 @@ exports.forgotPassword = async (req, res) => {
       });
     }
 
-    // Generate reset token
+    // Generate token
     const resetToken = crypto.randomBytes(20).toString('hex');
 
-    // Save hashed token
-    user.resetPasswordToken = crypto
+    // Hash token
+    const hashedToken = crypto
       .createHash('sha256')
       .update(resetToken)
       .digest('hex');
 
-    // Expire in 10 min
+    // Save token
+    user.resetPasswordToken = hashedToken;
+
+    // Expire in 10 minutes
     user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
 
     await user.save({ validateBeforeSave: false });
 
-    // Frontend reset URL
+    // Reset URL
     const resetUrl =
       `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
 
-    console.log("RESET URL:", resetUrl);
+    // Email message
+    const message = `
+Password Reset Request
 
-    // TEMPORARY: EMAIL DISABLED
-    // because nodemailer freezing on Render
+Click this link to reset your password:
+
+${resetUrl}
+`;
+
+    // Send email
+    await sendEmail({
+      to: user.email,
+      subject: 'Password Reset',
+      text: message,
+      html: `
+        <h2>Password Reset</h2>
+
+        <p>Click below to reset password:</p>
+
+        <a href="${resetUrl}">
+          Reset Password
+        </a>
+      `
+    });
 
     return res.status(200).json({
       success: true,
-      message: 'Reset link generated successfully',
-      resetUrl
+      message: 'Reset email sent successfully'
     });
 
   } catch (err) {
 
-    console.log("FORGOT PASSWORD ERROR:", err);
+    console.log('FORGOT PASSWORD ERROR:', err);
 
     return res.status(500).json({
       success: false,
@@ -153,6 +176,7 @@ exports.forgotPassword = async (req, res) => {
     });
   }
 };
+
 // ─── RESET PASSWORD ──────────────────────────────────────────
 exports.resetPassword = async (req, res) => {
 
