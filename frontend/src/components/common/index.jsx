@@ -59,7 +59,7 @@ export function CourseCard({ course, onWishlist, wishlisted }) {
     <div className="card group overflow-hidden cursor-pointer hover:-translate-y-1 transition-all duration-300">
       <div className="relative overflow-hidden aspect-video bg-gray-100 dark:bg-gray-800">
         {course.thumbnail
-          ? <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          ?  src={`https://coursehub-b7gs.onrender.com${course.thumbnail}`} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           : <div className="w-full h-full flex items-center justify-center"><BookOpen className="w-10 h-10 text-gray-300 dark:text-gray-600" /></div>
         }
         {/* Wishlist button */}
