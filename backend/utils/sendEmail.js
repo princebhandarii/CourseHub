@@ -1,9 +1,13 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async ({ to, subject, text, html }) => {
+
   try {
 
+    console.log("EMAIL FUNCTION STARTED");
+
     const transporter = nodemailer.createTransport({
+
       service: 'gmail',
 
       auth: {
@@ -11,30 +15,33 @@ const sendEmail = async ({ to, subject, text, html }) => {
         pass: process.env.EMAIL_PASS,
       },
 
-      tls: {
-        rejectUnauthorized: false,
-      },
-
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
     });
+
+    console.log("TRANSPORT CREATED");
 
     const info = await transporter.sendMail({
+
       from: `"CourseHub" <${process.env.EMAIL_USER}>`,
+
       to,
+
       subject,
+
       text,
+
       html,
+
     });
 
-    console.log('✅ Email Sent:', info.response);
+    console.log("EMAIL SENT");
+    console.log(info);
 
     return info;
 
   } catch (error) {
 
-    console.log('❌ Email Error:', error);
+    console.log("SEND EMAIL ERROR:");
+    console.log(error);
 
     throw error;
   }
