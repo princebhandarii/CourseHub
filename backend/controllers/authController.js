@@ -3,7 +3,7 @@ const { generateToken } = require('../middleware/auth');
 const { sendEmail } = require('../utils/sendEmail');
 const crypto = require('crypto');
 
-// ─── Helper: send token response ──────────────────────────────────────────────
+// ─── Helper: send token response ─────────────────────────────
 const sendTokenResponse = (user, statusCode, res) => {
   const token = generateToken(user._id);
 
@@ -16,12 +16,12 @@ const sendTokenResponse = (user, statusCode, res) => {
   });
 };
 
-// ─── REGISTER USER ────────────────────────────────────────────────────────────
-exports.register = async (req, res, next) => {
+// ─── REGISTER USER ───────────────────────────────────────────
+exports.register = async (req, res) => {
   try {
+
     const { name, email, password } = req.body;
 
-    // Check existing user
     const existing = await User.findOne({ email });
 
     if (existing) {
@@ -31,7 +31,6 @@ exports.register = async (req, res, next) => {
       });
     }
 
-    // Create user
     const user = await User.create({
       name,
       email,
@@ -40,10 +39,10 @@ exports.register = async (req, res, next) => {
       isVerified: true
     });
 
-    // Send token response
     sendTokenResponse(user, 201, res);
 
   } catch (err) {
+
     console.log(err);
 
     res.status(500).json({
@@ -53,9 +52,10 @@ exports.register = async (req, res, next) => {
   }
 };
 
-// ─── LOGIN USER ───────────────────────────────────────────────────────────────
-exports.login = async (req, res, next) => {
+// ─── LOGIN USER ──────────────────────────────────────────────
+exports.login = async (req, res) => {
   try {
+
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -86,6 +86,7 @@ exports.login = async (req, res, next) => {
     sendTokenResponse(user, 200, res);
 
   } catch (err) {
+
     console.log(err);
 
     res.status(500).json({
@@ -95,10 +96,14 @@ exports.login = async (req, res, next) => {
   }
 };
 
-// ─── FORGOT PASSWORD ──────────────────────────────────────────────────────────
+// ─── FORGOT PASSWORD ─────────────────────────────────────────
 exports.forgotPassword = async (req, res) => {
+
   try {
+
     const { email } = req.body;
+
+    console.log("EMAIL:", email);
 
     const user = await User.findOne({ email });
 
@@ -112,53 +117,79 @@ exports.forgotPassword = async (req, res) => {
     // Generate reset token
     const resetToken = crypto.randomBytes(20).toString('hex');
 
+    // Save hashed token
     user.resetPasswordToken = crypto
       .createHash('sha256')
       .update(resetToken)
       .digest('hex');
 
+    // Expire in 10 min
     user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
 
     await user.save({ validateBeforeSave: false });
 
-    // Reset URL
+    // Frontend reset URL
     const resetUrl =
       `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+
+    console.log("RESET URL:", resetUrl);
 
     const message = `
 Password Reset Request
 
-Click below link to reset password:
+Click this link to reset your password:
 
 ${resetUrl}
 
 If you did not request this email, ignore it.
 `;
 
+    // SEND EMAIL
     await sendEmail({
       to: user.email,
       subject: 'Password Reset',
-      text: message
+      text: message,
+      html: `
+        <h2>Password Reset</h2>
+        <p>Click below button to reset password:</p>
+
+        <a href="${resetUrl}" 
+           style="
+             display:inline-block;
+             padding:12px 20px;
+             background:#000;
+             color:#fff;
+             text-decoration:none;
+             border-radius:8px;
+           ">
+           Reset Password
+        </a>
+
+        <p>If you did not request this, ignore this email.</p>
+      `
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: 'Reset email sent'
+      message: 'Reset email sent successfully'
     });
 
   } catch (err) {
-    console.log(err);
 
-    res.status(500).json({
+    console.log("FORGOT PASSWORD ERROR:", err);
+
+    return res.status(500).json({
       success: false,
-      message: 'Failed to send reset email'
+      message: err.message
     });
   }
 };
 
-// ─── RESET PASSWORD ───────────────────────────────────────────────────────────
+// ─── RESET PASSWORD ──────────────────────────────────────────
 exports.resetPassword = async (req, res) => {
+
   try {
+
     const resetPasswordToken = crypto
       .createHash('sha256')
       .update(req.params.token)
@@ -186,6 +217,7 @@ exports.resetPassword = async (req, res) => {
     sendTokenResponse(user, 200, res);
 
   } catch (err) {
+
     console.log(err);
 
     res.status(500).json({
@@ -195,9 +227,11 @@ exports.resetPassword = async (req, res) => {
   }
 };
 
-// ─── ADMIN LOGIN ──────────────────────────────────────────────────────────────
-exports.adminLogin = async (req, res, next) => {
+// ─── ADMIN LOGIN ─────────────────────────────────────────────
+exports.adminLogin = async (req, res) => {
+
   try {
+
     const { email, password } = req.body;
 
     const user = await User.findOne({
@@ -215,6 +249,7 @@ exports.adminLogin = async (req, res, next) => {
     sendTokenResponse(user, 200, res);
 
   } catch (err) {
+
     console.log(err);
 
     res.status(500).json({
@@ -224,9 +259,11 @@ exports.adminLogin = async (req, res, next) => {
   }
 };
 
-// ─── ADMIN REGISTER ───────────────────────────────────────────────────────────
-exports.adminRegister = async (req, res, next) => {
+// ─── ADMIN REGISTER ──────────────────────────────────────────
+exports.adminRegister = async (req, res) => {
+
   try {
+
     const { name, email, password, adminSecret } = req.body;
 
     if (adminSecret !== process.env.ADMIN_SECRET) {
@@ -256,6 +293,7 @@ exports.adminRegister = async (req, res, next) => {
     sendTokenResponse(user, 201, res);
 
   } catch (err) {
+
     console.log(err);
 
     res.status(500).json({
@@ -265,8 +303,9 @@ exports.adminRegister = async (req, res, next) => {
   }
 };
 
-// ─── GET CURRENT USER ─────────────────────────────────────────────────────────
+// ─── GET CURRENT USER ────────────────────────────────────────
 exports.getMe = async (req, res) => {
+
   res.json({
     success: true,
     user: req.user
