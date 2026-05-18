@@ -20,7 +20,7 @@ export default function CourseCard({ course, onWishlist, wishlisted }) {
         
         {thumbnailUrl ? (
           <img
-            src={thumbnailUrl}
+           src={`https://coursehub-b7gs.onrender.com/uploads/${course.thumbnail}`}
             alt={course.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
