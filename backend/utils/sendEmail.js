@@ -1,26 +1,37 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async ({ to, subject, text, html }) => {
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: Number(process.env.EMAIL_PORT) || 587,
-    secure: false,
+  try {
 
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+    // Create transporter
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
 
-  await transporter.sendMail({
-    from: `"CourseHub" <${process.env.EMAIL_USER}>`,
-    to,
-    subject,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
 
-    // IMPORTANT
-    text,
-    html,
-  });
+    // Send mail
+    const info = await transporter.sendMail({
+      from: `"CourseHub" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+
+      // Support both
+      text,
+      html,
+    });
+
+    console.log('✅ Email sent:', info.response);
+
+  } catch (error) {
+
+    console.log('❌ Email Error:', error);
+
+    throw new Error('Email could not be sent');
+  }
 };
 
 module.exports = { sendEmail };
