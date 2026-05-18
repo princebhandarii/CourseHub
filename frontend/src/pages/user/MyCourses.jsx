@@ -40,7 +40,7 @@ export default function MyCourses() {
               <div key={en._id} className="card overflow-hidden group hover:-translate-y-1 transition-all duration-300">
                 <div className="relative aspect-video bg-gray-100 dark:bg-gray-800 overflow-hidden">
                   {c.thumbnail
-                    ? <img src={c.thumbnail} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    ? <img src={`https://coursehub-b7gs.onrender.com${c.thumbnail}`} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     : <div className="w-full h-full flex items-center justify-center"><BookOpen className="w-10 h-10 text-gray-300" /></div>
                   }
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
