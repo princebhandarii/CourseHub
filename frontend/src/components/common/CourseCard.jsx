@@ -8,7 +8,7 @@ export default function CourseCard({ course, onWishlist, wishlisted }) {
       <div className="relative overflow-hidden aspect-video bg-gray-100 dark:bg-gray-800">
         {course.thumbnail ? (
           <img
-            src={course.thumbnail}
+          src={`https://coursehub-b7gs.onrender.com${course.thumbnail}`}
             alt={course.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
