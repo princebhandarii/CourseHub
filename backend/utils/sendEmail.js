@@ -4,14 +4,9 @@ const nodemailer = require('nodemailer');
 
 const sendEmail = async ({ to, subject, text, html }) => {
 
-  // ✅ Create transporter
   const transporter = nodemailer.createTransport({
 
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-
-    port: Number(process.env.EMAIL_PORT) || 587,
-
-    secure: false,
+    service: 'gmail',
 
     auth: {
       user: process.env.EMAIL_USER,
@@ -20,10 +15,6 @@ const sendEmail = async ({ to, subject, text, html }) => {
     },
   });
 
-  // ✅ Verify transporter connection
-  await transporter.verify();
-
-  // ✅ Send email
   const info = await transporter.sendMail({
 
     from: `"CourseHub" <${process.env.EMAIL_USER}>`,
