@@ -25,16 +25,26 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (Postman, mobile apps)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+
+    // Allow requests with no origin
+    if (!origin) {
       return callback(null, true);
     }
-    return callback(null, true); // Allow all for now; restrict in production if needed
+
+    if (
+      allowedOrigins.includes(origin)
+    ) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('CORS not allowed'));
   },
-  methods:      ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials:  true,
+
+  credentials: true,
 }));
 
 // ─── Body Parser ──────────────────────────────────────────────────────────────
