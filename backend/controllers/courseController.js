@@ -1,6 +1,7 @@
 const Course  = require('../models/Course');
 const Section = require('../models/Section');
 const Video   = require('../models/Video');
+const cloudinary = require('../config/cloudinary');
 const { Enrollment } = require('../models/index');
 const path    = require('path');
 const fs      = require('fs');
@@ -163,32 +164,73 @@ exports.addSection = async (req, res, next) => {
 };
 
 // ─── @POST /api/courses/:id/sections/:sectionId/videos  (admin) ──────────────
+// ─── @POST /api/courses/:id/sections/:sectionId/videos  (admin) ──────────────
 exports.addVideo = async (req, res, next) => {
   try {
-    if (!req.file) return res.status(400).json({ success: false, message: 'No video file uploaded.' });
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No video file uploaded.',
+      });
+    }
 
     const section = await Section.findById(req.params.sectionId);
-    if (!section) return res.status(404).json({ success: false, message: 'Section not found.' });
+
+    if (!section) {
+      return res.status(404).json({
+        success: false,
+        message: 'Section not found.',
+      });
+    }
+
+    // ✅ Upload video to Cloudinary
+    const result = await cloudinary.uploader.upload(
+      req.file.path,
+      {
+        resource_type: 'video',
+        folder: 'coursehub/videos',
+      }
+    );
 
     const order = section.videos.length;
+
+    // ✅ Save Cloudinary URL
     const video = await Video.create({
-      title:    req.body.title || req.file.originalname,
+      title: req.body.title || req.file.originalname,
+
       description: req.body.description || '',
-      url:      `/uploads/videos/${req.file.filename}`,
+
+      url: result.secure_url,
+
       duration: Number(req.body.duration) || 0,
-      isFree:   req.body.isFree === 'true',
+
+      isFree: req.body.isFree === 'true',
+
       order,
-      section:  section._id,
-      course:   req.params.id,
+
+      section: section._id,
+
+      course: req.params.id,
     });
 
     section.videos.push(video._id);
+
     await section.save();
 
-    // Update total lecture count on course
-    await Course.findByIdAndUpdate(req.params.id, { $inc: { totalLectures: 1 } });
+    // Update lecture count
+    await Course.findByIdAndUpdate(
+      req.params.id,
+      {
+        $inc: { totalLectures: 1 },
+      }
+    );
 
-    res.status(201).json({ success: true, video });
+    res.status(201).json({
+      success: true,
+      video,
+    });
+
   } catch (err) {
     next(err);
   }
