@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 const sendEmail = async ({ to, subject, text, html }) => {
 
   await transporter.sendMail({
-    from: `"CourseHub" <${process.env.EMAIL_USER}>`,
+    from: process.env.EMAIL_USER,
     to,
     subject,
     text,
