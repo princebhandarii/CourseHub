@@ -44,7 +44,7 @@ export default function Footer() {
         </div>
         <div className="border-t border-gray-100 dark:border-gray-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-gray-400">© {new Date().getFullYear()} CourseHub. All rights reserved.</p>
-          <p className="text-xs text-gray-400">Built with Prince</p>
+          <p className="text-xs text-gray-400">Built with Prince ❤️</p>
         </div>
       </div>
     </footer>
