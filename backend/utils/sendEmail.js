@@ -2,22 +2,25 @@
 
 const nodemailer = require('nodemailer');
 
-const sendEmail = async ({ to, subject, text, html }) => {
+const sendEmail = async ({ to, subject, text }) => {
 
   const transporter = nodemailer.createTransport({
 
     service: 'gmail',
 
     auth: {
+
       user: process.env.EMAIL_USER,
 
       pass: process.env.EMAIL_PASS,
+
     },
+
   });
 
-  const info = await transporter.sendMail({
+  await transporter.sendMail({
 
-    from: `"CourseHub" <${process.env.EMAIL_USER}>`,
+    from: process.env.EMAIL_USER,
 
     to,
 
@@ -25,12 +28,8 @@ const sendEmail = async ({ to, subject, text, html }) => {
 
     text,
 
-    html,
   });
 
-  console.log('✅ Email sent:', info.messageId);
-
-  return info;
 };
 
 module.exports = { sendEmail };
