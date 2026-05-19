@@ -21,7 +21,6 @@ function StarRating({ rating, onChange, readonly }) {
   );
 }
 
-// Load Razorpay script dynamically
 function loadRazorpayScript() {
   return new Promise((resolve) => {
     if (window.Razorpay) return resolve(true);
@@ -84,7 +83,6 @@ export default function CourseDetail() {
       const res = await paymentService.createOrder(id);
       const data = res.data;
 
-      // Free course — already enrolled on backend
       if (data.free) {
         setEnrolled(true);
         toast.success('Enrolled successfully! 🎉');
@@ -92,7 +90,6 @@ export default function CourseDetail() {
         return;
       }
 
-      // Load Razorpay
       const loaded = await loadRazorpayScript();
       if (!loaded) {
         toast.error('Razorpay failed to load. Check your internet.');
@@ -105,9 +102,7 @@ export default function CourseDetail() {
         currency:    data.order.currency,
         name:        'CourseHub',
         description: data.course.name,
-        image:       data.course.thumbnail
-                       ? `http://localhost:5002${data.course.thumbnail}`
-                       : undefined,
+        image:       data.course.thumbnail || undefined,
         order_id:    data.order.id,
         handler: async (response) => {
           try {
@@ -150,7 +145,6 @@ export default function CourseDetail() {
     }
   };
 
-  // Play first video free (no login needed for preview)
   const handleFreePreview = () => {
     const firstVideo = course?.sections?.[0]?.videos?.[0];
     if (!firstVideo) return toast.error('No preview available.');
@@ -204,8 +198,10 @@ export default function CourseDetail() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
         {/* ── Left column ─────────────────────────────────────────────────── */}
         <div className="lg:col-span-2 space-y-8">
+
           {/* Header */}
           <div>
             <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-3">
@@ -241,7 +237,7 @@ export default function CourseDetail() {
           {course.thumbnail && (
             <div className="relative rounded-2xl overflow-hidden aspect-video bg-gray-100 dark:bg-gray-800 cursor-pointer group"
               onClick={enrolled ? () => navigate(`/watch/${id}`) : handleFreePreview}>
-              <img src={`http://localhost:5002${course.thumbnail}`} alt={course.title} className="w-full h-full object-cover" />
+              <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center">
                 <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Play className="w-8 h-8 text-gray-900 ml-1" />
@@ -306,7 +302,6 @@ export default function CourseDetail() {
                     </div>
                   </button>
                   {expandSec[section._id] && section.videos?.map((video, vIdx) => {
-                    // First video of first section is always free preview
                     const isPreview = sIdx === 0 && vIdx === 0;
                     const canPlay   = enrolled || isPreview;
                     return (
@@ -394,7 +389,7 @@ export default function CourseDetail() {
           <div className="card p-6 shadow-xl">
             {course.thumbnail && (
               <div className="rounded-xl overflow-hidden aspect-video bg-gray-100 dark:bg-gray-800 mb-5">
-                <img src={`http://localhost:5002${course.thumbnail}`} alt="" className="w-full h-full object-cover" />
+                <img src={course.thumbnail} alt="" className="w-full h-full object-cover" />
               </div>
             )}
 
@@ -454,6 +449,7 @@ export default function CourseDetail() {
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );
