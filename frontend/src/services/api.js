@@ -36,6 +36,21 @@ api.interceptors.response.use(
   }
 );
 
+// ─── Auth service ───────────────────────────────────────────────────────────
+export const authService = {
+  register: (data) => api.post('/api/auth/register', data),
+  login:    (data) => api.post('/api/auth/login', data),
+  adminLogin: (data) => api.post('/api/auth/admin/login', data),
+
+  getMe: () => api.get('/api/auth/me'),
+
+  forgotPassword: (data) =>
+    api.post('/api/auth/forgot-password', data),
+
+  resetPassword: (token, data) =>
+    api.post(`/api/auth/reset-password/${token}`, data),
+};
+
 export default api;
 
 // ─── Course service helpers ────────────────────────────────────────────────────
@@ -97,3 +112,5 @@ export const paymentService = {
   createOrder: (courseId) => api.post(`/payment/order/${courseId}`),
   verify:      (data)     => api.post('/payment/verify', data),
 };
+
+
