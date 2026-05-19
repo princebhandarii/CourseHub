@@ -195,7 +195,7 @@ export default function WatchCourse() {
                 autoPlay
                 onEnded={() => { saveProgress(); if (nextVid) goToVideo(nextVid); }}
               >
-                <source src={`${import.meta.env.VITE_API_URL || 'http://localhost:5002'}${curVideo.url}`} />
+                <source src={curVideo.url} />
                 Your browser does not support the video tag.
               </video>
             ) : (
