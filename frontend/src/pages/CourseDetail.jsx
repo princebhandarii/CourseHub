@@ -241,7 +241,7 @@ export default function CourseDetail() {
           {course.thumbnail && (
             <div className="relative rounded-2xl overflow-hidden aspect-video bg-gray-100 dark:bg-gray-800 cursor-pointer group"
               onClick={enrolled ? () => navigate(`/watch/${id}`) : handleFreePreview}>
-              <img src={`http://localhost:5002${course.thumbnail}`} alt={course.title} className="w-full h-full object-cover" />
+              <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center">
                 <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Play className="w-8 h-8 text-gray-900 ml-1" />
