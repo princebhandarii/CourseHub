@@ -1,8 +1,16 @@
+// backend/routes/contactRoutes.js
+
 const express = require('express');
-const r = express.Router();
-const { sendContact } = require('../controllers/contactController');
 
-// Public — no auth needed
-r.post('/', sendContact);
+const router = express.Router();
 
-module.exports = r;
+// ✅ Import controller
+const {
+  sendContact,
+} = require('../controllers/contactController');
+
+// ✅ Public contact route
+router.post('/', sendContact);
+
+// ✅ Export router
+module.exports = router;
