@@ -1,11 +1,13 @@
-const express = require('express');
-const cors    = require('cors');
-const morgan  = require('morgan');
-const path    = require('path');
-const dotenv  = require('dotenv');
+// backend/server.js
 
-const connectDB      = require('./config/db');
-const errorHandler   = require('./middleware/errorHandler');
+const express = require('express');
+const cors = require('cors');
+const morgan = require('morgan');
+const path = require('path');
+const dotenv = require('dotenv');
+
+const connectDB = require('./config/db');
+const errorHandler = require('./middleware/errorHandler');
 
 // Load env vars
 dotenv.config();
@@ -15,76 +17,132 @@ connectDB();
 
 const app = express();
 
-// ─── CORS ─────────────────────────────────────────────────────────────────────
-// Allow both local dev and deployed Vercel frontend
-const allowedOrigins = [
-  process.env.CLIENT_URL,
-  'http://localhost:5173',
-  'http://localhost:3000',
-].filter(Boolean);
+
+// ─────────────────────────────────────────────────────────────
+// CORS FIX
+// ─────────────────────────────────────────────────────────────
 
 app.use(cors({
-  origin: (origin, callback) => {
-
-    // Allow requests with no origin
-    if (!origin) {
-      return callback(null, true);
-    }
-
-    if (
-      allowedOrigins.includes(origin)
-    ) {
-      return callback(null, true);
-    }
-
-    return callback(new Error('CORS not allowed'));
-  },
-
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://course-hub-peach.vercel.app',
+  ],
 
   credentials: true,
+
+  methods: [
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE',
+    'PATCH',
+    'OPTIONS',
+  ],
+
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+  ],
 }));
 
-// ─── Body Parser ──────────────────────────────────────────────────────────────
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// IMPORTANT
+app.options('*', cors());
 
-// ─── Logger ───────────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────
+// BODY PARSER
+// ─────────────────────────────────────────────────────────────
+
+app.use(express.json({
+  limit: '10mb',
+}));
+
+app.use(express.urlencoded({
+  extended: true,
+  limit: '10mb',
+}));
+
+
+// ─────────────────────────────────────────────────────────────
+// LOGGER
+// ─────────────────────────────────────────────────────────────
+
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// ─── Static Uploads (for local videos — thumbnails served via Cloudinary) ─────
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ─── API Routes ───────────────────────────────────────────────────────────────
-app.use('/api/auth',        require('./routes/authRoutes'));
-app.use('/api/admin',       require('./routes/adminRoutes'));
-app.use('/api/courses',     require('./routes/courseRoutes'));
-app.use('/api/users',       require('./routes/userRoutes'));
-app.use('/api/contact',     require('./routes/contactRoutes'));
+// ─────────────────────────────────────────────────────────────
+// STATIC UPLOADS
+// ─────────────────────────────────────────────────────────────
+
+app.use(
+  '/uploads',
+  express.static(path.join(__dirname, 'uploads'))
+);
+
+
+// ─────────────────────────────────────────────────────────────
+// API ROUTES
+// ─────────────────────────────────────────────────────────────
+
+app.use('/api/auth', require('./routes/authRoutes'));
+
+app.use('/api/admin', require('./routes/adminRoutes'));
+
+app.use('/api/courses', require('./routes/courseRoutes'));
+
+app.use('/api/users', require('./routes/userRoutes'));
+
+app.use('/api/contact', require('./routes/contactRoutes'));
+
 app.use('/api/enrollments', require('./routes/enrollmentRoutes'));
-app.use('/api/payment',     require('./routes/paymentRoutes'));
-app.use('/api/progress',    require('./routes/progressRoutes'));
-app.use('/api/reviews',     require('./routes/reviewRoutes'));
-app.use('/api/wishlist',    require('./routes/wishlistRoutes'));
 
-// ─── Health Check ─────────────────────────────────────────────────────────────
+app.use('/api/payment', require('./routes/paymentRoutes'));
+
+app.use('/api/progress', require('./routes/progressRoutes'));
+
+app.use('/api/reviews', require('./routes/reviewRoutes'));
+
+app.use('/api/wishlist', require('./routes/wishlistRoutes'));
+
+
+// ─────────────────────────────────────────────────────────────
+// HEALTH CHECK
+// ─────────────────────────────────────────────────────────────
+
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'CourseHub API running', timestamp: new Date() });
+
+  res.json({
+    status: 'ok',
+    message: 'CourseHub API running',
+    timestamp: new Date(),
+  });
+
 });
 
-// ─── Error Handler ────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────
+// ERROR HANDLER
+// ─────────────────────────────────────────────────────────────
+
 app.use(errorHandler);
 
-// ─── Start Server ─────────────────────────────────────────────────────────────
-// Use Render's PORT env variable automatically
+
+// ─────────────────────────────────────────────────────────────
+// START SERVER
+// ─────────────────────────────────────────────────────────────
+
 const PORT = process.env.PORT || 5002;
 
 app.listen(PORT, () => {
-  console.log(`✅  Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+
+  console.log(
+    `✅ Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
+  );
+
 });
+
 
 module.exports = app;
