@@ -62,7 +62,12 @@ export default function ForgotPassword() {
                   </div>
                 </div>
                 <button type="submit" disabled={loading} className="btn-primary w-full justify-center py-3">
-                  {loading ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> : 'Send Reset Link'}
+                {loading ? (
+                    <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    Sending... (may take up to 60s)
+                   </span>
+                  ) : 'Send Reset Link'}
                 </button>
               </form>
               <Link to="/login" className="flex items-center justify-center gap-1 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white mt-5">
