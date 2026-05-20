@@ -132,7 +132,7 @@ export default function AdminDashboard() {
                 <div className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xs font-bold flex-shrink-0">{i + 1}</div>
                 <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden flex-shrink-0">
                   {item.course?.thumbnail
-                    ? <img  src={`https://coursehub-b7gs.onrender.com${item.course.thumbnail}`} className="w-full h-full object-cover" alt="" />
+                    ? <img  src={item.course.thumbnail} className="w-full h-full object-cover" alt="" />
                     : <div className="w-full h-full flex items-center justify-center"><BookOpen className="w-4 h-4 text-gray-400" /></div>
                   }
                 </div>
