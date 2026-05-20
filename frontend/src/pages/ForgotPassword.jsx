@@ -65,7 +65,7 @@ export default function ForgotPassword() {
                 {loading ? (
                     <span className="flex items-center gap-2">
                     <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                    Sending... (may take up to 60s)
+                    Sending...
                    </span>
                   ) : 'Send Reset Link'}
                 </button>
