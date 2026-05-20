@@ -1,3 +1,5 @@
+Live : https://course-hub-peach.vercel.app/
+
 # 🎓 CourseHub — Full-Stack MERN Course Selling Platform
 
 A production-ready, modern course selling platform built with the MERN stack. Features a beautiful black & white minimal UI with dark mode, admin dashboard, video player, progress tracking, reviews, wishlist, and more.
